@@ -1,7 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import userRoutes from './routes/userRoutes.js';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import userRoutes from "./routes/userRoutes.js";
+import exercisesRoutes from "./routes/exercisesRoutes.js";
+import indexRoutes from "./routes/index.js";
+import muscleGroupRoutes from "./routes/muscleGroupRoutes.js";
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
@@ -10,8 +13,17 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use('/api/users', userRoutes);
+app.use("/api", indexRoutes);
+
+// Rutas de usuarios
+app.use("/users", userRoutes);
+
+// Rutas de ejercicios
+app.use("/exercises", exercisesRoutes);
+
+// Rutas de grupos musculares
+app.use("/muscle-groups", muscleGroupRoutes);
 
 app.listen(process.env.PORT, () => {
-  console.log('Servidor corriendo en el puerto', process.env.PORT);
+  console.log("Servidor corriendo en el puerto", process.env.PORT);
 });

@@ -15,6 +15,30 @@ model User {
   last_name  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  role       String?  @default("user")
 
   @@map("users")
+}
+
+model MuscleGroup {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String     @unique
+  description String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  exercises   Exercise[]
+
+  @@map("muscle_groups")
+}
+
+model Exercise {
+  id              String      @id @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  muscle_group_id String      @db.Uuid
+  muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  @@map("exercises")
 }
