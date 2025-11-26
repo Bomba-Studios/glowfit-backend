@@ -1,9 +1,9 @@
-import prisma from "../prismaClient.js";
+import * as muscleGroupService from "../services/muscleGroupService.js";
 
 // Obtener grupos musculares
 export const getMuscleGroups = async (req, res) => {
   try {
-    const muscleGroups = await prisma.muscleGroup.findMany();
+    const muscleGroups = await muscleGroupService.getMuscleGroups();
     res.json(muscleGroups);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener grupos musculares" });
@@ -19,12 +19,7 @@ export const createMuscleGroup = async (req, res) => {
   }
 
   try {
-    const newMuscleGroup = await prisma.muscleGroup.create({
-      data: {
-        name,
-      },
-    });
-
+    const newMuscleGroup = await muscleGroupService.createMuscleGroup({ name });
     res.status(201).json(newMuscleGroup);
   } catch (error) {
     console.error("Error al crear grupo muscular:", error);

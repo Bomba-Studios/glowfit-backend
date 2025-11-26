@@ -5,6 +5,7 @@ import exercisesRoutes from "./routes/exercisesRoutes.js";
 import indexRoutes from "./routes/index.js";
 import muscleGroupRoutes from "./routes/muscleGroupRoutes.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,4 @@ app.use("/exercises", exercisesRoutes);
 // Rutas de grupos musculares
 app.use("/muscle-groups", muscleGroupRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log("Servidor corriendo en el puerto", process.env.PORT);
-});
+export default app;
