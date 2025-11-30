@@ -4,6 +4,7 @@ import userRoutes from "./routes/userRoutes.js";
 import exercisesRoutes from "./routes/exercisesRoutes.js";
 import indexRoutes from "./routes/index.js";
 import muscleGroupRoutes from "./routes/muscleGroupRoutes.js";
+import routineRoutes from "./routes/routineRoutes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -24,5 +25,8 @@ app.use("/exercises", exercisesRoutes);
 
 // Rutas de grupos musculares
 app.use("/muscle-groups", muscleGroupRoutes);
+
+// Rutas de rutinas
+app.use("/routines", routineRoutes);
 
 export default app;
