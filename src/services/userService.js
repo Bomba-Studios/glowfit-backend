@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils/jwtUtils.js';
 
 export const register = async (userData) => {
-    const { email, password, name, last_name } = userData;
+    const { email, password, name, last_name, date_of_birth, weight, height, gender } = userData;
 
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
@@ -17,6 +17,10 @@ export const register = async (userData) => {
         password: hashedPassword,
         name: name || null,
         last_name: last_name || null,
+        date_of_birth: date_of_birth || null,
+        weight: weight || null,
+        height: height || null,
+        gender: gender || null,
     });
 
     const token = generateToken(newUser.id, newUser.email);
@@ -46,10 +50,19 @@ export const getUsers = async () => {
     return await userRepository.findAll();
 };
 
+export const getUserById = async (userId) => {
+    return await userRepository.findById(userId);
+};
+
 export const getProfile = async (userId) => {
     const user = await userRepository.findById(userId);
     if (!user) {
         throw new Error("Usuario no encontrado");
     }
     return user;
+};
+
+export const updateUser = async (userId, data) => {
+    // Aquí podrías agregar lógica de negocio adicional antes de actualizar
+    return await userRepository.update(userId, data);
 };

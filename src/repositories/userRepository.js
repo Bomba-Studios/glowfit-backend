@@ -20,6 +20,10 @@ export const findById = async (id) => {
             email: true,
             name: true,
             last_name: true,
+            date_of_birth: true,
+            weight: true,
+            height: true,
+            gender: true,
             created_at: true,
             updated_at: true,
         },
@@ -33,8 +37,32 @@ export const findAll = async () => {
             email: true,
             name: true,
             last_name: true,
+            date_of_birth: true,
+            weight: true,
+            height: true,
+            gender: true,
             created_at: true,
             updated_at: true,
+        },
+    });
+};
+
+export const update = async (id, data) => {
+    return await prisma.user.update({
+        where: { id },
+        data,
+         select: {
+            id: true,
+            email: true,
+            name: true,
+            last_name: true,
+            date_of_birth: true,
+            weight: true,
+            height: true,
+            gender: true,
+            created_at: true,
+            updated_at: true,
+            role: true,
         },
     });
 };
