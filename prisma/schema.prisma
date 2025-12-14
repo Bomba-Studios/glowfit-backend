@@ -8,19 +8,22 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid()) @db.Uuid
-  email      String   @unique
-  password   String
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique
+  password      String
   name          String?
   last_name     String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  role          String?   @default("user")
   date_of_birth DateTime? @map("date_of_birth")
-  weight        Float?
-  height        Float?
   gender        String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  role          String?  @default("user")
+  height        Float?
+  weight        Float?
+  goal_id       Int?
+  goals         goals?    @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
 
+  @@index([goal_id], map: "idx_users_goal_id")
   @@map("users")
 }
 
@@ -93,4 +96,11 @@ model routines {
   updated_at         DateTime?           @default(now()) @db.Timestamp(6)
   routine_days       routine_days[]
   routine_exercises  routine_exercises[]
+}
+
+model goals {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.VarChar(50)
+  description String?
+  users       User[]
 }
