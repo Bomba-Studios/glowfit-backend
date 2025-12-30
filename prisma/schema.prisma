@@ -43,6 +43,7 @@ model Exercise {
   name            String
   description     String?
   muscle_group_id String      @db.Uuid
+  gif_url         String?
   created_at      DateTime    @default(now())
   updated_at      DateTime    @updatedAt
   muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
