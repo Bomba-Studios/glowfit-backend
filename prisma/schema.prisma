@@ -28,26 +28,44 @@ model User {
 }
 
 model MuscleGroup {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String     @unique
-  description String?
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-  exercises   Exercise[]
+  id               String           @id @default(uuid()) @db.Uuid
+  name             String           @unique
+  name_en          String?
+  description      String?
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+  exercises        Exercise[]
+  exercise_muscles ExerciseMuscle[]
 
   @@map("muscle_groups")
 }
 
 model Exercise {
-  id              String      @id @default(uuid()) @db.Uuid
-  name            String
-  description     String?
-  muscle_group_id String      @db.Uuid
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @updatedAt
-  muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+  id               String           @id @default(uuid()) @db.Uuid
+  name             String
+  description      String?
+  link_img         String?
+  muscle_group_id  String           @db.Uuid
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+  muscle_group     MuscleGroup      @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+  exercise_muscles ExerciseMuscle[]
 
   @@map("exercises")
+}
+
+model ExerciseMuscle {
+  id              String      @id @default(uuid()) @db.Uuid
+  exercise_id     String      @db.Uuid
+  muscle_group_id String      @db.Uuid
+  is_primary      Boolean     @default(false)
+  created_at      DateTime    @default(now())
+  
+  exercise        Exercise    @relation(fields: [exercise_id], references: [id], onDelete: Cascade)
+  muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+
+  @@unique([exercise_id, muscle_group_id])
+  @@map("exercise_muscles")
 }
 
 model days_of_week {
