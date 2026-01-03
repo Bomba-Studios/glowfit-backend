@@ -8,20 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid()) @db.Uuid
-  email         String    @unique
-  password      String
-  name          String?
-  last_name     String?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  role          String?   @default("user")
-  date_of_birth DateTime? @map("date_of_birth")
-  gender        String?
-  height        Float?
-  weight        Float?
-  goal_id       Int?
-  goals         goals?    @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
+  id                     String    @id @default(uuid()) @db.Uuid
+  email                  String    @unique
+  password               String
+  name                   String?
+  last_name              String?
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+  role                   String?   @default("user")
+  date_of_birth          DateTime? @map("date_of_birth")
+  gender                 String?
+  goal_id                Int?
+  height                 Float?
+  weight                 Float?
+  has_disability         Boolean?  @default(false) @map("has_disability")
+  disability_description String?   @map("disability_description")
+  goals                  goals?    @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
 
   @@index([goal_id], map: "idx_users_goal_id")
   @@map("users")
@@ -30,12 +32,12 @@ model User {
 model MuscleGroup {
   id               String           @id @default(uuid()) @db.Uuid
   name             String           @unique
-  name_en          String?
   description      String?
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
-  exercises        Exercise[]
+  name_en          String?
   exercise_muscles ExerciseMuscle[]
+  exercises        Exercise[]
 
   @@map("muscle_groups")
 }
@@ -44,12 +46,12 @@ model Exercise {
   id               String           @id @default(uuid()) @db.Uuid
   name             String
   description      String?
-  link_img         String?
   muscle_group_id  String           @db.Uuid
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
-  muscle_group     MuscleGroup      @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+  link_img         String?
   exercise_muscles ExerciseMuscle[]
+  muscle_group     MuscleGroup      @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
 
   @@map("exercises")
 }
@@ -60,7 +62,6 @@ model ExerciseMuscle {
   muscle_group_id String      @db.Uuid
   is_primary      Boolean     @default(false)
   created_at      DateTime    @default(now())
-  
   exercise        Exercise    @relation(fields: [exercise_id], references: [id], onDelete: Cascade)
   muscle_group    MuscleGroup @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
 

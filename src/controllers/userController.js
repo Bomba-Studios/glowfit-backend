@@ -81,33 +81,39 @@ export const getUserById = async (req, res) => {
 // Actualizar usuario
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const data = req.body;
+  let data = req.body;
 
-  // Validación básica: comprobar si hay datos para actualizar
-  if (Object.keys(data).length === 0) {
-    return res.status(400).json({ error: "No se proporcionaron datos para actualizar." });
+  // Validación: verificar que req.body exista
+  if (!data || typeof data !== 'object') {
+    return res.status(400).json({ error: "Datos inválidos." });
   }
 
-  // Prevenir actualización de campos sensibles o inmutables si es necesario
-  delete data.id;
-  delete data.email;
-  delete data.password;
-  delete data.created_at;
-  delete data.updated_at;
+  // Prevenir actualización de campos sensibles o inmutables
+  const { 
+    id: _, 
+    email, 
+    password, 
+    created_at, 
+    updated_at,
+    ...allowedData 
+  } = data;
 
-   // Si viene date_of_birth, asegurarse de que es un objeto Date
-   if (data.date_of_birth) {
-      data.date_of_birth = new Date(data.date_of_birth);
-   }
+  // Validación: comprobar si hay datos para actualizar DESPUÉS de filtrar
+  if (Object.keys(allowedData).length === 0) {
+    return res.status(400).json({ error: "No se proporcionaron datos válidos para actualizar." });
+  }
+
+  // Si viene date_of_birth, asegurarse de que es un objeto Date
+  if (allowedData.date_of_birth) {
+    allowedData.date_of_birth = new Date(allowedData.date_of_birth);
+  }
 
   try {
-    // Verificar si el usuario existe (opcional, prisma lanza error, pero puede ser bueno validarlo)
-    // En este caso confiamos en Prisma
-    const updatedUser = await userService.updateUser(id, data);
+    const updatedUser = await userService.updateUser(id, allowedData);
     res.json(updatedUser);
   } catch (error) {
     if (error.code === 'P2025') {
-        return res.status(404).json({ error: "Usuario no encontrado." });
+      return res.status(404).json({ error: "Usuario no encontrado." });
     }
     console.error("Error al actualizar usuario:", error);
     res.status(500).json({ error: "Error interno al actualizar usuario." });

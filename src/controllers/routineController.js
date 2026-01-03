@@ -1,4 +1,7 @@
 import * as routineService from "../services/routineService.js";
+import * as aiService from "../services/aiService.js";
+import * as userService from "../services/userService.js";
+import * as exerciseService from "../services/exerciseService.js";
 
 export const createRoutine = async (req, res) => {
   try {
@@ -16,5 +19,43 @@ export const getRoutinesByUser = async (req, res) => {
     res.json(routines);
   } catch (error) {
     res.status(500).json({ error: error.message || "Error al obtener las rutinas" });
+  }
+};
+
+export const generateAIRoutine = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    // Obtener perfil del usuario
+    const userProfile = await userService.getUserById(userId);
+    if (!userProfile) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Obtener ejercicios disponibles
+    const exercises = await exerciseService.getExercises();
+    if (!exercises || exercises.length === 0) {
+      return res.status(400).json({ error: "No hay ejercicios disponibles" });
+    }
+
+    // Generar rutina con IA
+    const aiRoutineData = await aiService.generateRoutineWithAI(userProfile, exercises);
+
+    // Guardar la rutina en la base de datos
+    const routineData = {
+      ...aiRoutineData,
+      user_id: userId,
+      is_active: true,
+    };
+
+    const savedRoutine = await routineService.createRoutine(routineData);
+
+    res.status(201).json({
+      message: "Rutina generada exitosamente con IA",
+      routine: savedRoutine,
+    });
+  } catch (error) {
+    console.error("Error al generar rutina con IA:", error);
+    res.status(500).json({ error: error.message || "Error al generar rutina con IA" });
   }
 };
