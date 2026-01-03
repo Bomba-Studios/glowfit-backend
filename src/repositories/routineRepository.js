@@ -11,8 +11,8 @@ export const createRoutine = async (data) => {
     level,
     goal,
     is_active,
-    days, // Array of day IDs [1, 2, 3]
-    exercises, // Array of objects [{ exercise_id, order_position, sets, reps, weight, rest_time, notes }]
+    days,
+    exercises,
   } = data;
 
   return await prisma.routines.create({

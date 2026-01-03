@@ -37,6 +37,22 @@ export const generateRoutineWithAI = async (userProfile, exercises) => {
     muscle_group_id: ex.muscle_group_id,
   }));
 
+  // Formatear los días de entrenamiento del usuario
+  const dayNames = {
+    1: "Lunes",
+    2: "Martes",
+    3: "Miércoles",
+    4: "Jueves",
+    5: "Viernes",
+    6: "Sábado",
+    7: "Domingo"
+  };
+  
+  const trainingDays = userProfile.user_training_days?.map(td => td.day_id) || [];
+  const trainingDaysFormatted = trainingDays.length > 0
+    ? trainingDays.map(dayId => `${dayId} (${dayNames[dayId]})`).join(", ")
+    : "No especificado";
+
   const prompt = `Eres un entrenador personal profesional. Genera una rutina de ejercicios personalizada basándote en el siguiente perfil de usuario:
 
 - Peso: ${userProfile.weight || "No especificado"} kg
@@ -44,11 +60,18 @@ export const generateRoutineWithAI = async (userProfile, exercises) => {
 - Edad: ${age || "No especificado"} años
 - Género: ${userProfile.gender || "No especificado"}
 - Objetivo: ${userProfile.goal || "General fitness"}
+- Tiene discapacidad: ${userProfile.has_disability === true ? "Sí" : userProfile.has_disability === false ? "No" : "No especificado"}
+- Descripción de discapacidad: ${userProfile.disability_description || "No especificado"}
+- Días disponibles para entrenar: ${trainingDaysFormatted}
+
+Si el usuario tiene alguna discapacidad, adapta los ejercicios seleccionados para que sean seguros y apropiados según la descripción proporcionada. Evita ejercicios que puedan ser contraproducentes o peligrosos para su condición.
+
+${trainingDays.length > 0 ? `IMPORTANTE: El usuario SOLO puede entrenar los días: ${trainingDaysFormatted}. La rutina debe incluir ÚNICAMENTE estos días en el array "days".` : "Genera una rutina para los días que consideres apropiados según el objetivo del usuario."}
 
 Ejercicios disponibles:
 ${JSON.stringify(exerciseList, null, 2)}
 
-Genera una rutina semanal completa. Para cada ejercicio incluye: sets, reps, rest_time (en segundos), y notes opcionales.
+Genera una rutina personalizada para los días especificados. Para cada ejercicio incluye: sets, reps, rest_time (en segundos), y notes opcionales.
 
 IMPORTANTE: Responde ÚNICAMENTE con un JSON válido con la siguiente estructura exacta, sin texto adicional:
 {
