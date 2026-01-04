@@ -8,7 +8,9 @@ export const createRoutine = async (req, res) => {
     const routine = await routineService.createRoutine(req.body);
     res.status(201).json(routine);
   } catch (error) {
-    res.status(500).json({ error: error.message || "Error al crear la rutina" });
+    res
+      .status(500)
+      .json({ error: error.message || "Error al crear la rutina" });
   }
 };
 
@@ -18,14 +20,16 @@ export const getRoutinesByUser = async (req, res) => {
     const routines = await routineService.getRoutinesByUserId(userId);
     res.json(routines);
   } catch (error) {
-    res.status(500).json({ error: error.message || "Error al obtener las rutinas" });
+    res
+      .status(500)
+      .json({ error: error.message || "Error al obtener las rutinas" });
   }
 };
 
 export const generateAIRoutine = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     // Obtener perfil del usuario
     const userProfile = await userService.getUserById(userId);
     if (!userProfile) {
@@ -39,7 +43,10 @@ export const generateAIRoutine = async (req, res) => {
     }
 
     // Generar rutina con IA
-    const aiRoutineData = await aiService.generateRoutineWithAI(userProfile, exercises);
+    const aiRoutineData = await aiService.generateRoutineWithAI(
+      userProfile,
+      exercises
+    );
 
     // Guardar la rutina en la base de datos
     const routineData = {
@@ -56,6 +63,20 @@ export const generateAIRoutine = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al generar rutina con IA:", error);
-    res.status(500).json({ error: error.message || "Error al generar rutina con IA" });
+    res
+      .status(500)
+      .json({ error: error.message || "Error al generar rutina con IA" });
+  }
+};
+
+export const markRoutineAsCompleted = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const routine = await routineService.markRoutineAsCompleted(id);
+    res.json(routine);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error.message || "Error al completar la rutina" });
   }
 };

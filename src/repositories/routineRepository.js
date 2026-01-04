@@ -57,5 +57,21 @@ export const getRoutinesByUserId = async (userId) => {
       routine_days: true,
       routine_exercises: true,
     },
+    include: {
+      routine_days: true,
+      routine_exercises: true,
+    },
+  });
+};
+
+export const markRoutineAsCompleted = async (routineId) => {
+  return await prisma.routines.update({
+    where: {
+      id: routineId,
+    },
+    data: {
+      is_completed: true,
+      completed_at: new Date(),
+    },
   });
 };
