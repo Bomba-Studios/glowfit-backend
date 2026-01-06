@@ -1,7 +1,13 @@
 import prisma from "../config/prismaClient.js";
 
 export const findAll = async (options = {}) => {
-  const { limit, offset, muscleGroupId, includeRelations = false } = options;
+  const {
+    limit,
+    offset,
+    muscleGroupId,
+    includeRelations = false,
+    link,
+  } = options;
 
   const where = {};
   if (muscleGroupId) {
@@ -30,6 +36,10 @@ export const findAll = async (options = {}) => {
   }
   if (offset) {
     queryOptions.skip = parseInt(offset);
+  }
+
+  if (link) {
+    queryOptions.where.link_img = link;
   }
 
   const [exercises, total] = await Promise.all([
