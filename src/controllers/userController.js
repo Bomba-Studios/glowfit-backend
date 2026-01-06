@@ -42,6 +42,11 @@ export const login = async (req, res) => {
   }
 };
 
+// Logout de usuario
+export const logout = async (req, res) => {
+  res.status(200).json({ message: "Sesión cerrada exitosamente" });
+};
+
 // Obtener usuarios (protegido)
 export const getUsers = async (req, res) => {
   try {

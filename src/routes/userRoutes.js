@@ -2,6 +2,7 @@ import express from "express";
 import {
   register,
   login,
+  logout,
   getUsers,
   getProfile,
   updateUser,
@@ -14,6 +15,7 @@ const router = express.Router();
 // rutas publicas
 router.post("/register", register);
 router.post("/login", login);
+router.post("/logout", authenticateToken, logout);
 
 // rutas privadas
 router.get("/all-users", authenticateToken, getUsers);
