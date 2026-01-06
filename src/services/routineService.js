@@ -22,3 +22,10 @@ export const markRoutineAsCompleted = async (routineId) => {
   }
   return await routineRepository.markRoutineAsCompleted(routineId);
 };
+
+export const updateRoutine = async (id, data) => {
+  if (!id) {
+    throw new Error("El ID de la rutina es obligatorio");
+  }
+  return await routineRepository.updateRoutine(id, data);
+};

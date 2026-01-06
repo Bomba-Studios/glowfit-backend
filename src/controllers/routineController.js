@@ -80,3 +80,15 @@ export const markRoutineAsCompleted = async (req, res) => {
       .json({ error: error.message || "Error al completar la rutina" });
   }
 };
+
+export const updateRoutine = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const routine = await routineService.updateRoutine(id, req.body);
+    res.json(routine);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error.message || "Error al actualizar la rutina" });
+  }
+};
