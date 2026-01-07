@@ -37,29 +37,42 @@ export const generateAIRoutine = async (req, res) => {
     }
 
     // Obtener ejercicios disponibles
-    const exercises = await exerciseService.getExercises();
+    const { exercises } = await exerciseService.getExercises();
     if (!exercises || exercises.length === 0) {
       return res.status(400).json({ error: "No hay ejercicios disponibles" });
     }
 
-    // Generar rutina con IA
-    const aiRoutineData = await aiService.generateRoutineWithAI(
+    // Generar rutinas con IA (ahora devuelve múltiples rutinas)
+    const aiResponse = await aiService.generateRoutineWithAI(
       userProfile,
       exercises
     );
 
-    // Guardar la rutina en la base de datos
-    const routineData = {
-      ...aiRoutineData,
-      user_id: userId,
-      is_active: true,
-    };
+    // Procesar y guardar cada rutina individualmente
+    const savedRoutines = [];
 
-    const savedRoutine = await routineService.createRoutine(routineData);
+    for (const aiRoutine of aiResponse.routines) {
+      // Convertir el campo 'day' (número) a 'days' (array) para compatibilidad con el repositorio
+      const routineData = {
+        name: aiRoutine.name,
+        description: aiRoutine.description,
+        estimated_duration: aiRoutine.estimated_duration,
+        level: aiRoutine.level,
+        goal: aiRoutine.goal,
+        user_id: userId,
+        is_active: true,
+        days: [aiRoutine.day], // Convertir el día único a un array
+        exercises: aiRoutine.exercises,
+      };
+
+      const savedRoutine = await routineService.createRoutine(routineData);
+      savedRoutines.push(savedRoutine);
+    }
 
     res.status(201).json({
-      message: "Rutina generada exitosamente con IA",
-      routine: savedRoutine,
+      message: `${savedRoutines.length} rutina(s) generada(s) exitosamente con IA`,
+      routines: savedRoutines,
+      count: savedRoutines.length,
     });
   } catch (error) {
     console.error("Error al generar rutina con IA:", error);

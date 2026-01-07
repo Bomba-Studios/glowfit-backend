@@ -8,23 +8,24 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid()) @db.Uuid
-  email         String    @unique
-  password      String
-  name          String?
-  last_name     String?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  role          String?   @default("user")
-  date_of_birth DateTime? @map("date_of_birth")
-  gender        String?
-  height        Float?
-  weight        Float?
-  goal_id       Int?
-  has_disability Boolean?  @default(false) @map("has_disability")
-  disability_description String? @map("disability_description")
-  goals         goals?    @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
-  user_training_days user_training_days[]
+  id                     String               @id @default(uuid()) @db.Uuid
+  email                  String               @unique
+  password               String
+  name                   String?
+  last_name              String?
+  created_at             DateTime             @default(now())
+  updated_at             DateTime             @updatedAt
+  role                   String?              @default("user")
+  date_of_birth          DateTime?            @map("date_of_birth")
+  gender                 String?
+  goal_id                Int?
+  height                 Float?
+  weight                 Float?
+  has_disability         Boolean?             @default(false) @map("has_disability")
+  disability_description String?              @map("disability_description")
+  bmi                    Float?
+  user_training_days     user_training_days[]
+  goals                  goals?               @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
 
   @@index([goal_id], map: "idx_users_goal_id")
   @@map("users")
@@ -71,20 +72,20 @@ model ExerciseMuscle {
 }
 
 model days_of_week {
-  id           Int            @id
-  name_en      String         @db.VarChar(10)
-  name_es      String         @db.VarChar(10)
-  short_name   String         @db.VarChar(3)
-  routine_days routine_days[]
+  id                 Int                  @id
+  name_en            String               @db.VarChar(10)
+  name_es            String               @db.VarChar(10)
+  short_name         String               @db.VarChar(3)
+  routine_days       routine_days[]
   user_training_days user_training_days[]
 }
 
 model user_training_days {
-  user_id        String       @db.Uuid
-  day_id         Int
-  user           User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  day            days_of_week @relation(fields: [day_id], references: [id])
-  
+  user_id String       @db.Uuid
+  day_id  Int
+  day     days_of_week @relation(fields: [day_id], references: [id])
+  user    User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
   @@id([user_id, day_id])
   @@map("user_training_days")
 }
@@ -125,8 +126,8 @@ model routines {
   is_active          Boolean?            @default(true)
   created_at         DateTime?           @default(now()) @db.Timestamp(6)
   updated_at         DateTime?           @default(now()) @db.Timestamp(6)
-  is_completed       Boolean?            @default(false)
   completed_at       DateTime?           @db.Timestamp(6)
+  is_completed       Boolean?            @default(false)
   routine_days       routine_days[]
   routine_exercises  routine_exercises[]
 }
