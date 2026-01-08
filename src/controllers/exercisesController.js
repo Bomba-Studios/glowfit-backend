@@ -2,24 +2,33 @@ import * as exerciseService from "../services/exerciseService.js";
 
 export const getExercises = async (req, res) => {
   try {
-    const { limit, offset, muscleGroupId, includeRelations, link } = req.query;
+    const { limit, page, muscleGroupId, includeRelations, link } = req.query;
+
+    const parsedLimit = limit ? parseInt(limit) : 10;
+    const parsedPage = page ? parseInt(page) : 1;
+    const offset = (parsedPage - 1) * parsedLimit;
 
     const options = {
-      limit: limit ? parseInt(limit) : undefined,
-      offset: offset ? parseInt(offset) : undefined,
+      limit: parsedLimit,
+      offset: offset,
       muscleGroupId,
       includeRelations: includeRelations === "true",
       link,
     };
 
     const result = await exerciseService.getExercises(options);
+    const totalPages = Math.ceil(result.total / parsedLimit);
+
     res.json({
-      data: result.exercises,
       pagination: {
         total: result.total,
-        limit: options.limit || null,
-        offset: options.offset || 0,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPages: totalPages,
+        hasNextPage: parsedPage < totalPages,
+        hasPreviousPage: parsedPage > 1,
       },
+      data: result.exercises,
     });
   } catch (error) {
     console.error("Error fetching exercises:", error);
