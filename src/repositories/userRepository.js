@@ -69,6 +69,7 @@ export const update = async (id, data) => {
       date_of_birth: true,
       weight: true,
       height: true,
+      bmi: true,
       gender: true,
       created_at: true,
       updated_at: true,

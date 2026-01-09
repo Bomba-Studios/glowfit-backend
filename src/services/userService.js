@@ -96,7 +96,7 @@ export const updateUser = async (userId, data) => {
     const bmi = calculateBMI(weight, height);
 
     // Agregar el IMC a los datos a actualizar
-    data.imc = bmi;
+    data.bmi = bmi;
   }
 
   return await userRepository.update(userId, data);

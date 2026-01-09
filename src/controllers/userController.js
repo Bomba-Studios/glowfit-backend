@@ -11,7 +11,12 @@ export const register = async (req, res) => {
   }
 
   try {
-    const result = await userService.register({ email, password, name, last_name });
+    const result = await userService.register({
+      email,
+      password,
+      name,
+      last_name,
+    });
     return res.status(201).json(result);
   } catch (error) {
     if (error.message === "El usuario ya existe.") {
@@ -27,7 +32,9 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: "Email y contraseña son obligatorios" });
+    return res
+      .status(400)
+      .json({ error: "Email y contraseña son obligatorios" });
   }
 
   try {
@@ -89,23 +96,33 @@ export const updateUser = async (req, res) => {
   let data = req.body;
 
   // Validación: verificar que req.body exista
-  if (!data || typeof data !== 'object') {
+  if (!data || typeof data !== "object") {
     return res.status(400).json({ error: "Datos inválidos." });
   }
 
   // Prevenir actualización de campos sensibles o inmutables
-  const { 
-    id: _, 
-    email, 
-    password, 
-    created_at, 
+  const {
+    id: _,
+    email,
+    password,
+    created_at,
     updated_at,
-    ...allowedData 
+    goal_id, // Extraer goal_id para manejarlo por separado
+    ...allowedData
   } = data;
+
+  // Si viene goal_id, convertirlo a la relación correcta
+  if (goal_id !== undefined) {
+    allowedData.goals = {
+      connect: { id: goal_id },
+    };
+  }
 
   // Validación: comprobar si hay datos para actualizar DESPUÉS de filtrar
   if (Object.keys(allowedData).length === 0) {
-    return res.status(400).json({ error: "No se proporcionaron datos válidos para actualizar." });
+    return res
+      .status(400)
+      .json({ error: "No se proporcionaron datos válidos para actualizar." });
   }
 
   // Si viene date_of_birth, asegurarse de que es un objeto Date
@@ -117,7 +134,7 @@ export const updateUser = async (req, res) => {
     const updatedUser = await userService.updateUser(id, allowedData);
     res.json(updatedUser);
   } catch (error) {
-    if (error.code === 'P2025') {
+    if (error.code === "P2025") {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
     console.error("Error al actualizar usuario:", error);
