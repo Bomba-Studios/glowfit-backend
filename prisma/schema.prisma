@@ -45,15 +45,20 @@ model MuscleGroup {
 }
 
 model Exercise {
-  id               String           @id @default(uuid()) @db.Uuid
-  name             String
-  description      String?
-  muscle_group_id  String           @db.Uuid
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
-  link_img         String?
-  exercise_muscles ExerciseMuscle[]
-  muscle_group     MuscleGroup      @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
+  id                String           @id @default(uuid()) @db.Uuid
+  name              String
+  description       String?
+  muscle_group_id   String           @db.Uuid
+  created_at        DateTime         @default(now())
+  updated_at        DateTime         @updatedAt
+  link_img          String?
+  starting_position String?
+  execution         String?
+  tips              String[]
+  equipment         String[]
+  difficulty        String?          @db.VarChar(20)
+  exercise_muscles  ExerciseMuscle[]
+  muscle_group      MuscleGroup      @relation(fields: [muscle_group_id], references: [id], onDelete: Cascade)
 
   @@map("exercises")
 }
