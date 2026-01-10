@@ -130,6 +130,18 @@ export const updateUser = async (req, res) => {
     allowedData.date_of_birth = new Date(allowedData.date_of_birth);
   }
 
+  // Validar que no haya day_id duplicados en user_training_days
+  if (allowedData.user_training_days?.create) {
+    const dayIds = allowedData.user_training_days.create.map(d => d.day_id);
+    const uniqueDayIds = new Set(dayIds);
+
+    if (dayIds.length !== uniqueDayIds.size) {
+      return res.status(400).json({
+        error: "No se pueden asignar días de entrenamiento duplicados."
+      });
+    }
+  }
+
   try {
     const updatedUser = await userService.updateUser(id, allowedData);
     res.json(updatedUser);
