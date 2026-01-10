@@ -21,6 +21,11 @@ app.use(
 );
 app.use(express.json());
 
+// Ruta raíz
+app.get("/", (req, res) => {
+  res.send("Todo listo :)");
+});
+
 // Rutas
 app.use("/api", indexRoutes);
 
