@@ -16,11 +16,14 @@ export const getRoutinesByUserId = async (userId) => {
   return await routineRepository.getRoutinesByUserId(userId);
 };
 
-export const markRoutineAsCompleted = async (routineId) => {
+export const markRoutineAsCompleted = async (routineId, userId) => {
   if (!routineId) {
     throw new Error("El ID de la rutina es obligatorio");
   }
-  return await routineRepository.markRoutineAsCompleted(routineId);
+  if (!userId) {
+    throw new Error("El ID del usuario es obligatorio");
+  }
+  return await routineRepository.markRoutineAsCompleted(routineId, userId);
 };
 
 export const updateRoutine = async (id, data) => {

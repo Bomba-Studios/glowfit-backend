@@ -7,6 +7,7 @@ import {
   getProfile,
   updateUser,
   getUserById,
+  getUserActivity,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
 
@@ -20,6 +21,7 @@ router.post("/logout", authenticateToken, logout);
 // rutas privadas
 router.get("/all-users", authenticateToken, getUsers);
 router.get("/profile", authenticateToken, getProfile);
+router.get("/:id/activity", authenticateToken, getUserActivity);
 router.get("/:id", authenticateToken, getUserById);
 router.put("/:id", authenticateToken, updateUser);
 

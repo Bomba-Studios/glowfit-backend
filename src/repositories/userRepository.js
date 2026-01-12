@@ -86,3 +86,48 @@ export const update = async (id, data) => {
     },
   });
 };
+
+export const getUserActivity = async (userId, options = {}) => {
+  const { limit = 10, offset = 0, startDate, endDate } = options;
+
+  const where = {
+    user_id: userId,
+  };
+
+  // Filtros de fecha opcionales
+  if (startDate || endDate) {
+    where.completed_at = {};
+    if (startDate) {
+      where.completed_at.gte = new Date(startDate);
+    }
+    if (endDate) {
+      where.completed_at.lte = new Date(endDate);
+    }
+  }
+
+  const [completions, total] = await Promise.all([
+    prisma.routine_completions.findMany({
+      where,
+      include: {
+        routine: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            estimated_duration: true,
+            level: true,
+            goal: true,
+          },
+        },
+      },
+      orderBy: {
+        completed_at: "desc",
+      },
+      take: parseInt(limit),
+      skip: parseInt(offset),
+    }),
+    prisma.routine_completions.count({ where }),
+  ]);
+
+  return { completions, total };
+};

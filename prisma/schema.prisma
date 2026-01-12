@@ -25,6 +25,7 @@ model User {
   disability_description String?              @map("disability_description")
   bmi                    Float?
   user_training_days     user_training_days[]
+  routine_completions    routine_completions[]
   goals                  goals?               @relation(fields: [goal_id], references: [id], onUpdate: NoAction, map: "fk_users_goal")
 
   @@index([goal_id], map: "idx_users_goal_id")
@@ -135,6 +136,7 @@ model routines {
   is_completed       Boolean?            @default(false)
   routine_days       routine_days[]
   routine_exercises  routine_exercises[]
+  routine_completions routine_completions[]
 }
 
 model goals {
@@ -142,4 +144,21 @@ model goals {
   name        String  @unique @db.VarChar(50)
   description String?
   users       User[]
+}
+
+model routine_completions {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String    @db.Uuid
+  routine_id   String    @db.Uuid
+  completed_at DateTime  @default(now()) @db.Timestamp(6)
+  day_of_week  Int
+  created_at   DateTime  @default(now()) @db.Timestamp(6)
+
+  user    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  routine routines @relation(fields: [routine_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "idx_routine_completions_user_id")
+  @@index([routine_id], map: "idx_routine_completions_routine_id")
+  @@index([completed_at], map: "idx_routine_completions_completed_at")
+  @@map("routine_completions")
 }

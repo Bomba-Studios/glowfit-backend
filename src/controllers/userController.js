@@ -155,3 +155,58 @@ export const updateUser = async (req, res) => {
 };
 
 export const createUser = register;
+
+export const getUserActivity = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit, page, startDate, endDate } = req.query;
+
+    // Autorización: el usuario solo puede ver su propia actividad
+    if (req.user.userId !== id) {
+      return res.status(403).json({
+        error: "No tienes permiso para ver la actividad de este usuario",
+      });
+    }
+
+    const parsedLimit = limit ? parseInt(limit) : 10;
+    const parsedPage = page ? parseInt(page) : 1;
+    const offset = (parsedPage - 1) * parsedLimit;
+
+    const options = {
+      limit: parsedLimit,
+      offset: offset,
+      startDate,
+      endDate,
+    };
+
+    const result = await userService.getUserActivity(id, options);
+    const totalPages = Math.ceil(result.total / parsedLimit);
+
+    res.json({
+      pagination: {
+        total: result.total,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPages: totalPages,
+        hasNextPage: parsedPage < totalPages,
+        hasPreviousPage: parsedPage > 1,
+      },
+      data: result.completions.map((completion) => ({
+        id: completion.id,
+        completed_at: completion.completed_at,
+        day_of_week: completion.day_of_week,
+        routine: completion.routine,
+      })),
+    });
+  } catch (error) {
+    console.error("Error al obtener actividad del usuario:", error);
+
+    if (error.message === "Usuario no encontrado") {
+      return res.status(404).json({ error: error.message });
+    }
+
+    res.status(500).json({
+      error: error.message || "Error al obtener actividad del usuario",
+    });
+  }
+};

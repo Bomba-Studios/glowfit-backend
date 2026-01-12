@@ -101,3 +101,17 @@ export const updateUser = async (userId, data) => {
 
   return await userRepository.update(userId, data);
 };
+
+export const getUserActivity = async (userId, options) => {
+  if (!userId) {
+    throw new Error("El ID del usuario es obligatorio");
+  }
+
+  // Validar que el usuario existe
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return await userRepository.getUserActivity(userId, options);
+};

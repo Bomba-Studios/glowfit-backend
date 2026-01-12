@@ -64,14 +64,32 @@ export const getRoutinesByUserId = async (userId) => {
   });
 };
 
-export const markRoutineAsCompleted = async (routineId) => {
+export const markRoutineAsCompleted = async (routineId, userId) => {
+  const completedAt = new Date();
+  const dayOfWeek = completedAt.getDay() === 0 ? 7 : completedAt.getDay();
+
   return await prisma.routines.update({
     where: {
       id: routineId,
     },
     data: {
       is_completed: true,
-      completed_at: new Date(),
+      completed_at: completedAt,
+      routine_completions: {
+        create: {
+          user_id: userId,
+          completed_at: completedAt,
+          day_of_week: dayOfWeek,
+        },
+      },
+    },
+    include: {
+      routine_completions: {
+        orderBy: {
+          completed_at: "desc",
+        },
+        take: 1,
+      },
     },
   });
 };

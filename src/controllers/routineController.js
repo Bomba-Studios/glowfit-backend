@@ -85,9 +85,15 @@ export const generateAIRoutine = async (req, res) => {
 export const markRoutineAsCompleted = async (req, res) => {
   try {
     const { id } = req.params;
-    const routine = await routineService.markRoutineAsCompleted(id);
-    res.json(routine);
+    const userId = req.user.userId;
+
+    const routine = await routineService.markRoutineAsCompleted(id, userId);
+    res.json({
+      message: "Rutina completada exitosamente",
+      routine,
+    });
   } catch (error) {
+    console.error("Error al completar la rutina:", error);
     res
       .status(500)
       .json({ error: error.message || "Error al completar la rutina" });
