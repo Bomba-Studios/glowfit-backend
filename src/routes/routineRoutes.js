@@ -1,6 +1,7 @@
 import express from "express";
 import * as routineController from "../controllers/routineController.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
+import { aiLimiter } from "../middlewares/rateLimitMiddleware.js";
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ router.get("/user/:userId", routineController.getRoutinesByUser);
 router.put("/:id", routineController.updateRoutine);
 router.post(
   "/generate-ai",
+  aiLimiter,
   authenticateToken,
   routineController.generateAIRoutine
 );

@@ -6,6 +6,7 @@ import indexRoutes from "./routes/index.js";
 import muscleGroupRoutes from "./routes/muscleGroupRoutes.js";
 import routineRoutes from "./routes/routineRoutes.js";
 import dotenv from "dotenv";
+import { generalLimiter } from "./middlewares/rateLimitMiddleware.js";
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ app.use(
   })
 );
 app.use(express.json());
+
+// Rate limiting general para toda la API
+app.use(generalLimiter);
 
 // Ruta raíz
 app.get("/", (req, res) => {

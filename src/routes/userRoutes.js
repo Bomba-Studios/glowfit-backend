@@ -10,12 +10,13 @@ import {
   getUserActivity,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
+import { authLimiter } from "../middlewares/rateLimitMiddleware.js";
 
 const router = express.Router();
 
-// rutas publicas
-router.post("/register", register);
-router.post("/login", login);
+// rutas publicas con rate limiting estricto
+router.post("/register", authLimiter, register);
+router.post("/login", authLimiter, login);
 router.post("/logout", authenticateToken, logout);
 
 // rutas privadas
